@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>หมอเล้า 4.0</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <meta name="theme-color" content="#0f1117" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:   #4ade80;
+      --accent-d: #16a34a;
+      --bg:       #0f1117;
+      --surface:  #1a1d27;
+      --surface2: #22263a;
+      --text:     #f1f5f9;
+      --muted:    #64748b;
+      --border:   #2a2f45;
+      --input-bg: #13161f;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 60px;
+    }
+
+    /* ─── Header ─── */
+    .hero {
+      width: 100%;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 20px 28px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ─── Content wrapper ─── */
+    .content {
+      width: 100%;
+      max-width: 440px;
+      padding: 0 16px;
+      margin-top: 4px;
+    }
+
+    /* ─── Section label ─── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 22px 0 8px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── Card ─── */
+    .card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 4px 16px 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ─── Field ─── */
+    .field {
+      padding: 12px 0 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field:last-child { border-bottom: none; }
+
+    .field-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .field label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    .badge-opt {
+      font-size: 0.68rem;
+      font-weight: 600;
+      background: rgba(250,204,21,0.12);
+      color: #fbbf24;
+      border-radius: 20px;
+      padding: 2px 8px;
+      border: 1px solid rgba(251,191,36,0.2);
+    }
+
+    .input-wrap { position: relative; }
+
+    .field input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: 'Sarabun', sans-serif;
+      color: var(--text);
+      background: var(--input-bg);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .field input:focus {
+      outline: none;
+      border-color: var(--accent-d);
+      box-shadow: 0 0 0 3px rgba(74,222,128,0.1);
+    }
+
+    .field input::placeholder { color: #374151; }
+
+    /* ─── Flood toggle ─── */
+    .flood-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .flood-toggle-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .flood-toggle-left span {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    .toggle {
+      width: 42px;
+      height: 24px;
+      background: var(--border);
+      border-radius: 99px;
+      position: relative;
+      transition: background 0.25s;
+      flex-shrink: 0;
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #94a3b8;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.25s, background 0.25s;
+    }
+
+    .toggle.on { background: rgba(74,222,128,0.2); border: 1px solid var(--accent-d); }
+    .toggle.on::after { transform: translateX(18px); background: var(--accent); }
+
+    .flood-fields {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.35s ease, opacity 0.25s;
+      opacity: 0;
+    }
+
+    .flood-fields.open { max-height: 200px; opacity: 1; }
+
+    /* ─── Button ─── */
+    .btn-calc {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      background: var(--accent);
+      color: #052e16;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      font-family: 'Sarabun', sans-serif;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn-calc:active { opacity: 0.85; transform: scale(0.98); }
+
+    /* ─── Error ─── */
+    .error-msg {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 10px;
+      color: #f87171;
+      font-size: 0.84rem;
+      font-weight: 500;
+    }
+
+    /* ─── Result ─── */
+    .result-wrap {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .result-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 20px 24px;
+      text-align: center;
+    }
+
+    .result-hero .sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+
+    .result-hero .value {
+      font-size: 3.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1.1;
+      margin: 8px 0 2px;
+    }
+
+    .result-hero .unit {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .chips {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+    }
+
+    .chip .chip-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .chip .chip-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 4px;
+    }
+
+    .chip.flood-chip { display: none; }
+
+    .btn-reset {
+      width: 100%;
+      margin-top: 10px;
+      padding: 13px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-family: 'Sarabun', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-reset:active { color: var(--text); border-color: var(--muted); }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-wrap.show {
+      display: block;
+      animation: popIn 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <h1>หมอ<span>เล้า</span> 4.0</h1>
+    <p>คำนวณน้ำไก่กินเฉลี่ยต่อตัว</p>
+  </div>
+
+  <div class="content">
+
+    <!-- มิเตอร์หลัก -->
+    <div class="section-label">มิเตอร์น้ำ</div>
+    <div class="card">
+      <div class="field">
+        <div class="field-top">
+          <label>มิเตอร์ตอนเช้า</label>
+        </div>
+        <div class="input-wrap">
+          <input type="number" id="morning" placeholder="0.00" step="0.01" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-top">
+          <label>มิเตอร์ตอนเย็น</label>
+        </div>
+        <div class="input-wrap">
+          <input type="number" id="evening" placeholder="0.00" step="0.01" inputmode="decimal" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ฟลัดน้ำ (toggle) -->
+    <div class="section-label">ฟลัดน้ำ</div>
+    <div class="card">
+      <div class="flood-toggle" onclick="toggleFlood()">
+        <div class="flood-toggle-left">
+          <span>ฟลัดน้ำวันนี้</span>
+          <span class="badge-opt">ไม่บังคับ</span>
+        </div>
+        <div class="toggle" id="flood-toggle"></div>
+      </div>
+      <div class="flood-fields" id="flood-fields">
+        <div class="field">
+          <div class="field-top"><label>มิเตอร์ก่อนฟลัด</label></div>
+          <div class="input-wrap">
+            <input type="number" id="before_flood" placeholder="0.00" step="0.01" inputmode="decimal" />
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-top"><label>มิเตอร์หลังฟลัด</label></div>
+          <div class="input-wrap">
+            <input type="number" id="after_flood" placeholder="0.00" step="0.01" inputmode="decimal" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- จำนวนไก่ -->
+    <div class="section-label">จำนวนไก่</div>
+    <div class="card">
+      <div class="field">
+        <div class="field-top"><label>จำนวนไก่ทั้งหมด</label></div>
+        <div class="input-wrap">
+          <input type="number" id="chickens" placeholder="0" step="1" inputmode="numeric" />
+        </div>
+      </div>
+    </div>
+
+    <div class="error-msg" id="error">กรุณากรอกข้อมูลให้ครบและถูกต้อง</div>
+
+    <button class="btn-calc" onclick="calculate()">คำนวณ</button>
+
+    <!-- ผลลัพธ์ -->
+    <div class="result-wrap" id="result">
+      <div class="result-hero">
+        <div class="sub">น้ำต่อตัวเฉลี่ย</div>
+        <div class="value" id="r_per_bird">—</div>
+        <div class="unit">มิลลิลิตร / ตัว</div>
+      </div>
+
+      <div class="chips">
+        <div class="chip">
+          <div class="chip-label">น้ำรวมทั้งวัน</div>
+          <div class="chip-value" id="r_total">—</div>
+        </div>
+        <div class="chip">
+          <div class="chip-label">น้ำที่ไก่กิน</div>
+          <div class="chip-value" id="r_drink">—</div>
+        </div>
+        <div class="chip flood-chip" id="chip_flood">
+          <div class="chip-label">น้ำที่ใช้ฟลัด</div>
+          <div class="chip-value" id="r_flood">—</div>
+        </div>
+      </div>
+
+      <button class="btn-reset" onclick="resetForm()">ล้างข้อมูล</button>
+    </div>
+
+  </div>
+
+  <script>
+    let floodOn = false;
+
+    function toggleFlood() {
+      floodOn = !floodOn;
+      document.getElementById('flood-toggle').classList.toggle('on', floodOn);
+      document.getElementById('flood-fields').classList.toggle('open', floodOn);
+      if (!floodOn) {
+        document.getElementById('before_flood').value = '';
+        document.getElementById('after_flood').value  = '';
+      }
+    }
+
+    function fmt(n, d = 1) { return n.toFixed(d); }
+
+    function calculate() {
+      const morning  = parseFloat(document.getElementById('morning').value);
+      const evening  = parseFloat(document.getElementById('evening').value);
+      const chickens = parseInt(document.getElementById('chickens').value);
+      const err      = document.getElementById('error');
+
+      let flood = 0;
+      if (floodOn) {
+        const bf = parseFloat(document.getElementById('before_flood').value);
+        const af = parseFloat(document.getElementById('after_flood').value);
+        if (isNaN(bf) || isNaN(af) || af < bf) {
+          err.style.display = 'block';
+          document.getElementById('result').classList.remove('show');
+          document.getElementById('result').style.display = 'none';
+          return;
+        }
+        flood = af - bf;
+      }
+
+      if (isNaN(morning) || isNaN(evening) || isNaN(chickens) ||
+          chickens <= 0 || evening < morning) {
+        err.style.display = 'block';
+        document.getElementById('result').classList.remove('show');
+        document.getElementById('result').style.display = 'none';
+        return;
+      }
+
+      err.style.display = 'none';
+
+      const total       = evening - morning;
+      const drink       = total - flood;
+      const per_bird_ml = (drink / chickens) * 1000;
+
+      document.getElementById('r_per_bird').textContent = fmt(per_bird_ml, 1);
+      document.getElementById('r_total').textContent    = fmt(total, 1) + ' ล.';
+      document.getElementById('r_drink').textContent    = fmt(drink, 1) + ' ล.';
+      document.getElementById('r_flood').textContent    = fmt(flood, 1) + ' ล.';
+
+      const chipFlood = document.getElementById('chip_flood');
+      chipFlood.style.display = floodOn ? 'block' : 'none';
+
+      const resultEl = document.getElementById('result');
+      resultEl.style.display = 'block';
+      // trigger animation
+      void resultEl.offsetWidth;
+      resultEl.classList.add('show');
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function resetForm() {
+      ['morning','evening','before_flood','after_flood','chickens'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      if (floodOn) toggleFlood();
+      const resultEl = document.getElementById('result');
+      resultEl.classList.remove('show');
+      resultEl.style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>
