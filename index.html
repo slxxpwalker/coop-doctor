@@ -319,6 +319,23 @@
 
     .btn-reset:active { color: var(--text); border-color: var(--muted); }
 
+    .btn-clear {
+      width: 100%;
+      margin-top: 10px;
+      padding: 13px;
+      background: #D25353;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-family: 'Sarabun', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn-clear:active { opacity: 0.85; transform: scale(0.98); }
+
     @keyframes popIn {
       from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -400,6 +417,7 @@
     <div class="error-msg" id="error">กรุณากรอกข้อมูลให้ครบและถูกต้อง</div>
 
     <button class="btn-calc" onclick="calculate()">คำนวณ</button>
+    <button class="btn-clear" onclick="resetForm()">ล้างข้อมูล</button>
 
     <!-- ผลลัพธ์ -->
     <div class="result-wrap" id="result">
