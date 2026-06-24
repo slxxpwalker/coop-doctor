@@ -201,7 +201,7 @@
       opacity: 0;
     }
 
-    .flood-fields.open { max-height: 200px; opacity: 1; }
+    .flood-fields.open { max-height: 320px; opacity: 1; }
 
     /* ─── Button ─── */
     .btn-calc {
@@ -400,6 +400,15 @@
             <input type="number" id="after_flood" placeholder="0.00" step="0.01" inputmode="decimal" />
           </div>
         </div>
+        <div class="field">
+          <div class="field-top">
+            <label>Stock น้ำ</label>
+            <span class="badge-opt">ไม่บังคับ</span>
+          </div>
+          <div class="input-wrap">
+            <input type="number" id="stock_water" placeholder="0.00" step="0.01" inputmode="decimal" />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -470,15 +479,17 @@
 
       let flood = 0;
       if (floodOn) {
-        const bf = parseFloat(document.getElementById('before_flood').value);
-        const af = parseFloat(document.getElementById('after_flood').value);
-        if (isNaN(bf) || isNaN(af) || af < bf) {
+        const bf    = parseFloat(document.getElementById('before_flood').value);
+        const af    = parseFloat(document.getElementById('after_flood').value);
+        const swRaw = document.getElementById('stock_water').value;
+        const sw    = swRaw === '' ? 0 : parseFloat(swRaw);
+        if (isNaN(bf) || isNaN(af) || af < bf || isNaN(sw) || sw < 0) {
           err.style.display = 'block';
           document.getElementById('result').classList.remove('show');
           document.getElementById('result').style.display = 'none';
           return;
         }
-        flood = af - bf;
+        flood = (af - bf) + sw;
       }
 
       if (isNaN(morning) || isNaN(evening) || isNaN(chickens) ||
@@ -512,7 +523,7 @@
     }
 
     function resetForm() {
-      ['morning','evening','before_flood','after_flood','chickens'].forEach(id => {
+      ['morning','evening','before_flood','after_flood','stock_water','chickens'].forEach(id => {
         document.getElementById(id).value = '';
       });
       if (floodOn) toggleFlood();
